@@ -1,10 +1,12 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group 'org.example'
 version '1.0-SNAPSHOT'
-
+mainClassName='Main.Main'
 repositories {
     mavenCentral()
 }
@@ -12,8 +14,35 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    //dependencia de Javalin
+    implementation 'io.javalin:javalin:4.6.0'
+    implementation "org.slf4j:slf4j-simple:1.7.36"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.13.3"
+    implementation 'org.hibernate.orm:hibernate-core:6.0.2.Final'
+    implementation 'com.h2database:h2:2.1.212'
+    implementation 'org.postgresql:postgresql:42.3.6'
+    implementation 'org.thymeleaf:thymeleaf:3.0.15.RELEASE'
+    implementation group: 'org.jasypt', name: 'jasypt', version: '1.9.3'
+    implementation group: 'org.jasypt', name: 'jasypt', version: '1.9.3'
+    //implementation 'compile \'commons-io:commons-io:2.11.0\''
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+    implementation "jakarta.xml.ws:jakarta.xml.ws-api:3.0.1"
+    implementation "com.sun.xml.ws:jaxws-rt:3.0.2"
+    implementation "com.sun.xml.ws:jaxws-ri:3.0.2"
 }
 
-test {
-    useJUnitPlatform()
+shadowJar{
+    baseName = 'app'
+    classifier = ''
+    archiveVersion = ''
+}
+
+/**
+ * tarea necesaria para heroku si optamos por la tarea de Shadowjar
+ * en el archivo Procfile debe estar el siguiente comando:
+ * web: java -jar build/libs/app.jar
+ */
+task stage {
+    dependsOn shadowJar
 }
