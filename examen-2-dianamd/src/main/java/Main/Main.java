@@ -1,5 +1,6 @@
 package Main;
 
+import Controllers.ControllerApp;
 import Services.BootStrapServices;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
@@ -22,6 +23,6 @@ public class Main {
 
         });
         app.start(7000);
-        new Controller(app).applyRoutes();
+        new ControllerApp(app).applyRoutes();
     }
 }
