@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+<section class="vh-100">
+    
+    <div class="container-fluid h-custom">
+        
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        
+        <div class="col-md-9 col-lg-6 col-xl-5">
+            
+          <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+            class="img-fluid" alt="Sample image">
+        </div>
+        <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+            <a class="navbar-brand" href="#page-top">Registrese</a>
+          <form action="/register" method="post">
+            <label class="form-label"  style="color:red;" th:if="${check}">Este usuario ya esta tomado</label>
+
+
+            <!-- Email input -->
+            <div class="form-outline mb-4">
+              <input type="text" id="username" name="user" class="form-control form-control-lg"
+                placeholder="Introduzca un usuario valido..." required />
+              <label class="form-label" for="username">Usuario</label>
+            </div>
+  
+            <!-- Password input -->
+            <div class="form-outline mb-3">
+              <input type="password" id="password" name="password" class="form-control form-control-lg"
+                placeholder="Enter password" required/>
+              <label class="form-label" for="password">Contrasena</label>
+            </div>
+           
+  
+            <div class="d-flex justify-content-between align-items-center">
+              
+            </div>
+  
+            <div class="text-center text-lg-start mt-4 pt-2">
+              <button type="button" class="btn btn-primary btn-lg"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;" onclick="addUser()">Registrate</button>
+                <a class="btn btn-primary btn-lg"
+                   style="padding-left: 2.5rem; padding-right: 2.5rem;" href="/" >Salir</a>
+                <script>
+                    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
+
+                    //indicamos el nombre y la versión
+                    var dataBase = indexedDB.open("examen", 1);
+                    //se ejecuta la primera vez que se crea la estructura
+                    //o se cambia la versión de la base de datos.
+                    dataBase.onupgradeneeded = function (e) {
+                        console.log("Creando la estructura de la tabla");
+                        //obteniendo la conexión activa
+                        active = dataBase.result;
+                        //creando la colección:
+                        //En este caso, la colección, tendrá un ID autogenerado.
+                        var usuario = active.createObjectStore("usuario", { keyPath : 'id', autoIncrement : true });
+                        //creando los indices. (Dado por el nombre, campo y opciones)
+                        usuario.createIndex('por_username', 'username', {unique : true});
+                    };
+                    //El evento que se dispara una vez, lo
+                    dataBase.onsuccess = function (e) {
+                        console.log('Proceso ejecutado de forma correctamente');
+                    };
+
+                    dataBase.onerror = function (e) {
+                        console.error('Error en el proceso: '+e.target.errorCode);
+                    };
+
+                    function addUser() {
+                        var dbActiva = dataBase.result; //Nos retorna una referencia al IDBDatabase.
+                        //Para realizar una operación de agreagr, actualización o borrar.
+                        // Es necesario abrir una transacción e indicar un modo: readonly, readwrite y versionchange
+                        var transaccion = dbActiva.transaction(["usuario"], "readwrite");
+                        //Manejando los errores.
+                        transaccion.onerror = function (e) {
+                            alert(request.error.name + '\n\n' + request.error.message);
+                        };
+                        transaccion.oncomplete = function (e) {
+                            document.querySelector("#username").value = '';
+                            alert('Objeto agregado correctamente');
+                        };
+
+                        //abriendo la colección de datos que estaremos usando.
+                        var usuario = transaccion.objectStore("usuario");
+                        //Para agregar se puede usar add o put, el add requiere que no exista
+                        // el objeto.
+                        var request = usuario.put({
+                            username: document.querySelector("#username").value,
+                            password: document.querySelector("#password").value,
+                        });
+                        request.onerror = function (e) {
+                            var mensaje = "Error: "+e.target.errorCode;
+                            console.error(mensaje);
+                            alert(mensaje)
+                        };
+                        request.onsuccess = function (e) {
+                            console.log("Datos Procesado con exito");
+                            document.querySelector("#username").value = "";
+                            document.querySelector("#password").value = "";
+                        };
+                        var x = document.getElementsByTagName("form");
+                        x[0].submit();// Form submission
+                    }
+                    function listarDatos() {
+                        //por defecto si no lo indico el tipo de transacción será readonly
+                        var data = dataBase.result.transaction(["usuario"]);
+                        var usuarios = data.objectStore("usuario");
+                        var contador = 0;
+                        var usuarios_recuperados=[];
+
+                        //abriendo el cursor.
+                        usuarios.openCursor().onsuccess=function(e) {
+                            //recuperando la posicion del cursor
+                            var cursor = e.target.result;
+                            if(cursor){
+                                contador++;
+                                //recuperando el objeto.
+                                usuarios_recuperados.push(cursor.value);
+
+                                //Función que permite seguir recorriendo el cursor.
+                                cursor.continue();
+
+                            }else {
+                                console.log("La cantidad de registros recuperados es: "+contador);
+                            }
+                        };
+
+                        //Una vez que se realiza la operación llamo la impresión.
+                        data.oncomplete = function () {
+                            imprimirTabla(usuarios_recuperados);
+                        }
+
+                    }
+                    function imprimirTabla(lista_usuarios) {
+                        //creando la tabla...
+                        var tabla = document.createElement("table");
+                        var filaTabla = tabla.insertRow();
+                        filaTabla.insertCell().textContent = "id";
+                        filaTabla.insertCell().textContent = "Nombre";
+                        filaTabla.insertCell().textContent = "Contra";
+
+                        for (var key in lista_usuarios) {
+                            //
+                            filaTabla = tabla.insertRow();
+                            filaTabla.insertCell().textContent = ""+lista_usuarios[key].id;
+                            filaTabla.insertCell().textContent = ""+lista_usuarios[key].username;
+                            filaTabla.insertCell().textContent = ""+lista_usuarios[key].password;
+                        }
+
+                        document.getElementById("listaUsuario").innerHTML="";
+                        document.getElementById("listaUsuario").appendChild(tabla);
+                    }
+                </script>
+                <div id="listaUsuario"></div>
+            </div>
+  
+          </form>
+        </div>
+      </div>
+    </div>
+    <div
+      class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
+      <!-- Copyright -->
+      <div class="text-white mb-3 mb-md-0">
+        Copyright © 2020. All rights reserved.
+      </div>
+      <!-- Copyright -->
+  
+      <!-- Right -->
+      <div>
+        <a href="#!" class="text-white me-4">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="#!" class="text-white me-4">
+          <i class="fab fa-twitter"></i>
+        </a>
+        <a href="#!" class="text-white me-4">
+          <i class="fab fa-google"></i>
+        </a>
+        <a href="#!" class="text-white">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </div>
+      <!-- Right -->
+    </div>
+  </section>
