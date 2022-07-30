@@ -29,11 +29,11 @@ public class ControllerApp extends BaseController{
             app.get("",ctx->{
                 Map<String, Object> modelo = new HashMap<>();
                 modelo.put("titulo","Inicio");
-                modelo.put("user",ctx.sessionAttribute("user"));
+                modelo.put("user",ctx.sessionAttribute("userType"));
                 ctx.render("/public/index.html",modelo);
             });
             app.before("/login",ctx->{
-                if(ctx.sessionAttribute("user")!=null){
+                if(ctx.sessionAttribute("userType")=="admin" || ctx.sessionAttribute("userType")=="normal"){
                     ctx.redirect("/");
                 }
             });
@@ -54,10 +54,11 @@ public class ControllerApp extends BaseController{
                 }else{
                     if(user.getPassword().equals(contrasena)){
                         if(userService.isAdmin(user)){
-                            ctx.sessionAttribute("user","admin");
+                            ctx.sessionAttribute("userType","admin");
                         }else{
-                            ctx.sessionAttribute("user","normal");
+                            ctx.sessionAttribute("userType","normal");
                         }
+                        ctx.sessionAttribute("user",user);
                         ctx.redirect("/");
                     }else{
                         System.out.println("La contrasena esta mal");
@@ -91,6 +92,8 @@ public class ControllerApp extends BaseController{
                 form.setLongitud(longitud);
                 this.formService.createForm(form);
                 System.out.println("Nombre: "+name+" sector: "+sector+" level: "+level+" latitud: "+latitud+" longitud: "+longitud);
+                ctx.redirect("/");
+
             });
             app.get("/register",ctx->{
                 Map<String, Object> modelo = new HashMap<>();
@@ -114,8 +117,22 @@ public class ControllerApp extends BaseController{
                 }
             });
             app.get("/log-out",ctx->{
-                ctx.sessionAttribute("user","");
+                ctx.sessionAttribute("user",null);
+                ctx.sessionAttribute("userType","");
                 ctx.redirect("/");
+            });
+            app.get("/historial-formularios",ctx->{
+                Map<String, Object> modelo = new HashMap<>();
+                modelo.put("user",ctx.sessionAttribute("userType"));
+                modelo.put("forms",formService.getAllForms());
+                ctx.render("/public/show_forms.html",modelo);
+            });
+            app.get("/show-form/{id}",ctx->{
+                long id=ctx.pathParamAsClass("id", Long.class).get();
+                FormApp form= this.formService.getFormById(id);
+                Map<String, Object> modelo = new HashMap<>();
+                modelo.put("form",form);
+                ctx.render("/public/visualize_form.html",modelo);
             });
         });
     }

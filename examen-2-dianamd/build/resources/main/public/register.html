@@ -21,7 +21,7 @@
         <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
             <a class="navbar-brand" href="#page-top">Registrese</a>
           <form action="/register" method="post">
-            <label class="form-label" for="form3Example3" style="color:red;" th:if="${check}">Este usuario ya esta tomado</label>
+            <label class="form-label"  style="color:red;" th:if="${check}">Este usuario ya esta tomado</label>
 
 
             <!-- Email input -->
@@ -40,13 +40,6 @@
            
   
             <div class="d-flex justify-content-between align-items-center">
-              <!-- Checkbox -->
-              <!--<div class="form-check mb-0">
-                <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-                <label class="form-check-label" for="form2Example3">
-                  Recuerdame
-                </label>
-              </div>-->
               
             </div>
   
@@ -56,7 +49,6 @@
                 <a class="btn btn-primary btn-lg"
                    style="padding-left: 2.5rem; padding-right: 2.5rem;" href="/" >Salir</a>
                 <script>
-
                     var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
 
                     //indicamos el nombre y la versión
@@ -65,17 +57,13 @@
                     //o se cambia la versión de la base de datos.
                     dataBase.onupgradeneeded = function (e) {
                         console.log("Creando la estructura de la tabla");
-
                         //obteniendo la conexión activa
                         active = dataBase.result;
-
                         //creando la colección:
                         //En este caso, la colección, tendrá un ID autogenerado.
                         var usuario = active.createObjectStore("usuario", { keyPath : 'id', autoIncrement : true });
-
                         //creando los indices. (Dado por el nombre, campo y opciones)
                         usuario.createIndex('por_username', 'username', {unique : true});
-
                     };
                     //El evento que se dispara una vez, lo
                     dataBase.onsuccess = function (e) {
@@ -88,16 +76,13 @@
 
                     function addUser() {
                         var dbActiva = dataBase.result; //Nos retorna una referencia al IDBDatabase.
-
                         //Para realizar una operación de agreagr, actualización o borrar.
                         // Es necesario abrir una transacción e indicar un modo: readonly, readwrite y versionchange
                         var transaccion = dbActiva.transaction(["usuario"], "readwrite");
-
                         //Manejando los errores.
                         transaccion.onerror = function (e) {
                             alert(request.error.name + '\n\n' + request.error.message);
                         };
-
                         transaccion.oncomplete = function (e) {
                             document.querySelector("#username").value = '';
                             alert('Objeto agregado correctamente');
@@ -105,20 +90,17 @@
 
                         //abriendo la colección de datos que estaremos usando.
                         var usuario = transaccion.objectStore("usuario");
-
                         //Para agregar se puede usar add o put, el add requiere que no exista
                         // el objeto.
                         var request = usuario.put({
                             username: document.querySelector("#username").value,
                             password: document.querySelector("#password").value,
                         });
-
                         request.onerror = function (e) {
                             var mensaje = "Error: "+e.target.errorCode;
                             console.error(mensaje);
                             alert(mensaje)
                         };
-
                         request.onsuccess = function (e) {
                             console.log("Datos Procesado con exito");
                             document.querySelector("#username").value = "";

@@ -23,7 +23,7 @@ public class FormApp {
     private UserApp userForm;
     private String latitud;
     private String longitud;
-    private Boolean isDeleted;
+    private Boolean isDeleted=Boolean.FALSE;
 
     public FormApp() {
     }

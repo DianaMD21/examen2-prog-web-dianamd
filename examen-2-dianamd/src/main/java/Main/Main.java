@@ -1,13 +1,10 @@
 package Main;
 
 import Controllers.ControllerApp;
-import Entities.UserApp;
 import Services.BootStrapServices;
 import Services.UserService;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 
 import java.sql.SQLException;
 
@@ -35,6 +32,13 @@ public class Main {
 
         app.start(7000);
         new ControllerApp(app).applyRoutes();
+        app.after(ctx -> {
+            if(ctx.path().equalsIgnoreCase("/serviceworkers.js")){
+                System.out.println("Enviando el header de seguridad para el Service Worker");
+                ctx.header("Content-Type","application/javascript");
+                ctx.header("Service-Worker-Allowed", "/");
+            }
 
+        });
     }
 }

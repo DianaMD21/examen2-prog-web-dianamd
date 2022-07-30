@@ -47,7 +47,7 @@
               </select>
               </div>
 
-              <input type="hidden" name='latitud' value=''>
+              <input type="text" name='latitud' value=''>
               <input type="text" name='longitud' value=''>
             
   
@@ -55,39 +55,29 @@
               <button type="button" class="btn btn-primary btn-lg"
                 style="padding-left: 2.5rem; padding-right: 2.5rem;" onclick="getLocation()" >Enviar</button>
                 <p id="demo"></p>
-
                 <script>
                     var x = document.getElementById("demo");
-
                     function getLocation() {
                         navigator.geolocation.getCurrentPosition(function(geodata){
                             var coordenadas = geodata.coords;
                             document.querySelector('input[name="latitud"]').value = String(coordenadas.latitude);
                             document.querySelector('input[name="longitud"]').value = String(coordenadas.longitude);
+                            var x = document.getElementsByTagName("form");
+                            x[0].submit();
                             localStorage.setItem("name",  document.querySelector('input[name="name"]').value);
                             localStorage.setItem("sector",  document.querySelector('input[name="sector"]').value);
                             localStorage.setItem("schoollevel",  document.querySelector('input[name="schoollevel"]').value);
                             localStorage.setItem("latitud",  String(coordenadas.latitude));
                             localStorage.setItem("longitud",  String(coordenadas.longitude));
-                            var x = document.getElementsByTagName("form");
-                            x[0].submit();
+
                         }, function(){
                             x.innerHTML = "Geolocation is not supported by this browser.";
                         });
 
 
-                        //var x = document.getElementsByTagName("form");
-                        //x[0].submit();// Form submission
                     }
 
-                    function showPosition(position) {
-                        x.innerHTML = "Latitude: " + position.coords.latitude +
-                            "<br>Longitude: " + position.coords.longitude;
-                        document.querySelector('input[name="latitud"]').value = String(position.coords.latitude);
-                        document.querySelector('input[name="longitud"]').value = String(position.coords.longitude);
-                        var x = document.getElementsByTagName("form");
-                        x[0].submit();// Form submission
-                    }
+
                 </script>
             
             </div>
