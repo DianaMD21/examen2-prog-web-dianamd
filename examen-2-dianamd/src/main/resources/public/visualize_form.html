@@ -15,8 +15,9 @@
 
             <div class="col-md-9 col-lg-6 col-xl-5">
 
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-                     class="img-fluid" alt="Sample image">
+                <!--<img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+                     class="img-fluid" alt="Sample image">-->
+                <div id="map" style="height: 400px; width: 100%;"></div>
             </div>
             <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
                 <a class="navbar-brand" href="#page-top">Formulario:</a>
@@ -48,6 +49,12 @@
                                placeholder="Enter password" th:value="${form.userForm.username}" readonly/>
                         <label class="form-label" for="form3Example4">Nombre de usuario</label>
                     </div>
+
+                    <label class="form-label" for="form3Example4">Latitud</label>
+                    <input type="text" id="latitud" th:value="${form.latitud}" readonly>
+                    <br>
+                    <label class="form-label" for="form3Example4">Longitud</label>
+                    <input type="text" id="longitud" th:value="${form.longitud}" readonly>
 
 
                     <div class="text-center text-lg-start mt-4 pt-2">
@@ -86,3 +93,27 @@
         <!-- Right -->
     </div>
 </section>
+<script async defer  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJM6VORwxuHDglIaiBL_GmeZxqJ76T9og&callback=initMap&v=weekly"></script>
+<script>
+    // Initialize and add the map
+    function initMap() {
+        var latitud = parseFloat(document.getElementById("latitud").value);
+        var longitud = parseFloat(document.getElementById("longitud").value);
+        console.log(latitud);
+        console.log(longitud);
+        // The location of Uluru
+        const uluru = { lat: latitud, lng: longitud };
+        // The map, centered at Uluru
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 4,
+            center: uluru,
+        });
+        // The marker, positioned at Uluru
+        const marker = new google.maps.Marker({
+            position: uluru,
+            map: map,
+        });
+    }
+
+    window.initMap = initMap();
+</script>
