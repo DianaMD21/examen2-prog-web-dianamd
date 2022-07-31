@@ -44,9 +44,9 @@ public class FormService extends ManageDb<FormApp>{
     }
     public FormApp updateForm(FormApp form){
         FormApp tmp = getFormById(form.getId());
-        if(tmp == null){//no existe, no puede se actualizado
-            throw new ObjectDoesNotExistException("No Existe el usuario: "+form.getId());
-        }
+        /*if(tmp == null){//no existe, no puede se actualizado
+            throw new ObjectDoesNotExistException("No Existe el formulario: "+form.getId());
+        }*/
         this.modify(form);
         return form;
     }

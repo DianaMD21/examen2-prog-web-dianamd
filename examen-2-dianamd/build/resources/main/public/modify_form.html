@@ -21,28 +21,34 @@
             </div>
             <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
                 <a class="navbar-brand" href="#page-top">Formulario:</a>
-                <form action="/historial-formularios" method="get">
+                <form th:action="'/modify-form/'+${form.id}" method="post">
 
 
                     <!-- Email input -->
                     <div class="form-outline mb-4">
                         <input type="text" id="form3Example3" class="form-control form-control-lg"
-                               placeholder="Introduzca un usuario valido..." th:value="${form.name}"  readonly/>
-                        <label class="form-label" for="form3Example3">Nombre</label>
+                               placeholder="Introduzca un usuario valido..." th:value="${form.name}"  name="name"/>
+                        <label class="form-label" for="form3Example3" >Nombre</label>
                     </div>
 
                     <!-- Password input -->
                     <div class="form-outline mb-3">
                         <input type="text" id="form3Example4" class="form-control form-control-lg"
-                               placeholder="Enter password" th:value="${form.sector}" readonly/>
+                               placeholder="Enter password" th:value="${form.sector}" name="sector"/>
                         <label class="form-label" for="form3Example4">Sector</label>
                     </div>
                     <div class="form-outline mb-3">
-                        <label class="form-label" for="form3Example4">Nivel Escolar</label>
-                        <select name="cars" id="cars">
+                        <label class="form-label" for="form3Example4" >Nivel Escolar</label>
+                        <select id="cars" name="schoollevel">
                             <option th:value="${form.educationLevel}" th:text="${form.educationLevel}"></option>
+                            <option value="basico">Basico</option>
+                            <option value="medio">Medio</option>
+                            <option value="universitario">Grado Universitario</option>
+                            <option value="postgrado">Postgrado</option>
+                            <option value="doctorado">Doctorado</option>
                         </select>
                     </div>
+
 
                     <div class="form-outline mb-3">
                         <input type="text" id="form3Example5" class="form-control form-control-lg"
@@ -59,7 +65,9 @@
 
                     <div class="text-center text-lg-start mt-4 pt-2">
                         <button type="submit" class="btn btn-primary btn-lg"
-                                style="padding-left: 2.5rem; padding-right: 2.5rem;">Salir</button>
+                                style="padding-left: 2.5rem; padding-right: 2.5rem;">Modificar</button>
+                        <a class="btn btn-primary btn-lg"
+                           style="padding-left: 2.5rem; padding-right: 2.5rem;" href="/" >Salir</a>
 
                     </div>
 

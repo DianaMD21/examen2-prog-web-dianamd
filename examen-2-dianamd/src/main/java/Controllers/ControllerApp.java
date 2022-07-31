@@ -67,6 +67,28 @@ public class ControllerApp extends BaseController{
                     }
                 }
             });
+            app.get("/modify-form/{id}",ctx->{
+                long id=ctx.pathParamAsClass("id", Long.class).get();
+                FormApp form=this.formService.getFormById(id);
+                Map<String, Object> modelo = new HashMap<>();
+                modelo.put("form",form);
+                ctx.render("/public/modify_form.html",modelo);
+            });
+            app.post("/modify-form/{id}",ctx->{
+                Map<String, Object> modelo = new HashMap<>();
+                String name = ctx.formParam("name");
+                String sector = ctx.formParam("sector");
+                String level = ctx.formParam("schoollevel");
+                long id=ctx.pathParamAsClass("id", Long.class).get();
+                FormApp form=this.formService.getFormById(id);
+                System.out.println("mira :"+form.getUserForm().getUsername());
+                form.setName(name);
+                form.setSector(sector);
+                form.setEducationLevel(level);
+
+                this.formService.updateForm(form);
+                ctx.redirect("/historial-formularios");
+            });
             app.before("/fill-form",ctx->{
                 if(ctx.sessionAttribute("user")==null){
                     System.out.println("El usuario no esta logeado");
@@ -85,6 +107,7 @@ public class ControllerApp extends BaseController{
                 String longitud = ctx.formParam("longitud");
                 FormApp form=new FormApp();
                 form.setUserForm(ctx.sessionAttribute("user"));
+                System.out.println("mira :"+form.getUserForm().getUsername());
                 form.setName(name);
                 form.setSector(sector);
                 form.setEducationLevel(level);
@@ -113,6 +136,7 @@ public class ControllerApp extends BaseController{
                     user.getRoles().add(RolesApp.ROLE_USUARIO);
                     this.userService.createUser(user);
                     ctx.sessionAttribute("user",user);
+                    ctx.sessionAttribute("userType","normal");
                     ctx.redirect("/");
                 }
             });
@@ -124,7 +148,13 @@ public class ControllerApp extends BaseController{
             app.get("/historial-formularios",ctx->{
                 Map<String, Object> modelo = new HashMap<>();
                 modelo.put("user",ctx.sessionAttribute("userType"));
-                modelo.put("forms",formService.getAllForms());
+                modelo.put("userapp",ctx.sessionAttribute("user"));
+                if(ctx.sessionAttribute("userType").equals("admin")){
+                    modelo.put("forms",formService.getAllForms());
+                }else{
+                    UserApp user=ctx.sessionAttribute("user");
+                    modelo.put("forms",this.formService.getFormsByUser(user));
+                }
                 ctx.render("/public/show_forms.html",modelo);
             });
             app.get("/show-form/{id}",ctx->{
